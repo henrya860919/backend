@@ -53,7 +53,17 @@ router.post("/:id", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const all = await ReserveModel.find({});
+    const all = await ReserveModel.find({
+      createdAt: {
+        $gte: today,
+        $lte: tomorrow,
+      },
+    })
+      .populate({
+        path: "userId",
+        select: "_id name level",
+      })
+      .lean();
     res.send(all);
   } catch (error) {
     console.log(error);

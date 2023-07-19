@@ -51,7 +51,7 @@ router.post("/:id", async (req, res) => {
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const all = await ReserveModel.find({});
     res.send(all);

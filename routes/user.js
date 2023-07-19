@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const all = await UserModel.find({}, { _id: 1 });
     res.status(200).send(all);

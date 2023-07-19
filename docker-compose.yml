@@ -1,0 +1,30 @@
+version: '3'
+services:
+  badmintom:
+    build: ./
+    image: badmintom
+    ports:
+      - 3000:3000
+    deploy:
+      replicas: 1
+    container_name: badmintom
+    hostname: badmintom
+    networks:
+      - example-net
+  nginx-proxy:
+    build:
+      context: ./nginx
+    container_name: nginx
+    hostname: nginx
+    # environment:
+    #   - NGINX_SERVER_NAME=template.vincentcorgi
+    depends_on:
+      - badmintom
+    ports:
+      - 80:80
+    networks:
+      - example-net
+
+networks:
+  example-net:
+    external: true

@@ -1,0 +1,16 @@
+.git/
+.gitignore
+**/.gitkeep
+**/.DS_Store
+.next/
+.dockerignore
+Dockerfile
+docker-compose.yml
+node_modules/
+nginx/
+README.md
+.vscode
+.editorconfig
+LICENSE
+dist
+yarn.lock

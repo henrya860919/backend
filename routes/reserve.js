@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const moment = require("moment-timezone");
-const dateTaipei = moment.tz(Date.now(), "Asia/Taipei");
 const reserveSchema = new mongoose.Schema(
   {
     userId: {
@@ -106,26 +104,6 @@ router.get("/today", async (req, res) => {
   }
 });
 
-// router.get("/isReady", async (req, res) => {
-//   try {
-//     const list = await ReserveModel.find({
-//       status: 0,
-//       createdAt: {
-//         $gte: today,
-//         $lte: tomorrow,
-//       },
-//     })
-//       .populate({
-//         path: "userId",
-//         select: "_id name level",
-//       })
-//       .lean();
-//     res.status(200).send(list);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
-
 router.patch("/bkdr", async (req, res) => {
   await ReserveModel.updateMany(
     {},
@@ -143,6 +121,17 @@ router.patch("/addTimes/:id", async (req, res) => {
   try {
     const { id } = req.params;
     await ReserveModel.updateOne({ userId: id }, { $inc: { times: 1 } });
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+  }
+});
+router.patch("/decreaseTimes/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const one = await ReserveModel.findById(id);
+    one.times -= 1;
+    await one.save();
     res.sendStatus(200);
   } catch (error) {
     console.log(error);

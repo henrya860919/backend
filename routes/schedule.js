@@ -64,9 +64,9 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const scheduleList = await ScheduleModel.find({})
-      .populate("group1.players")
-      .populate("group2.players");
+    const scheduleList = await ScheduleModel.find({}).populate(
+      "group1.players group2.players"
+    );
     res.send(scheduleList);
   } catch (error) {
     console.log(error);
@@ -74,7 +74,9 @@ router.get("/", async (req, res) => {
 });
 router.get("/current", async (req, res) => {
   try {
-    const scheduleList = await ScheduleModel.find({ status: 1 });
+    const scheduleList = await ScheduleModel.find({ status: 1 }).populate(
+      "group1.players group2.players"
+    );
     res.send(scheduleList);
   } catch (error) {
     console.log(error);

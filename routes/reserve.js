@@ -42,11 +42,15 @@ const router = express.Router();
 router.post("/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    const { reserveDate } = req.body;
     const player = await ReserveModel.findOne({ userId: id });
     if (player) {
       res.status(401).send("this is player is exist!!");
     }
-    const one = await ReserveModel.create({ userId: id });
+    const one = await ReserveModel.create({
+      userId: id,
+      reserveDate: reserveDate,
+    });
     res.status(201).send(one);
   } catch (error) {
     console.log(error);
@@ -162,6 +166,13 @@ router.patch("/clearTimes/:id", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+router.delete("/", async (req, res) => {
+  await ReserveModel.deleteMany({
+    status: 0,
+  });
+  res.sendStatus(200);
 });
 
 module.exports = router;

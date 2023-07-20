@@ -131,6 +131,9 @@ router.patch("/decreaseTimes/:id", async (req, res) => {
     const { id } = req.params;
     const one = await ReserveModel.findById(id);
     one.times -= 1;
+    if (one.times < 0) {
+      return res.status(401).send("times can not less 0 !!");
+    }
     await one.save();
     res.sendStatus(200);
   } catch (error) {

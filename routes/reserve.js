@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const moment = require("moment-timezone");
+const dateTaipei = moment.tz(Date.now(), "Asia/Taipei");
 const reserveSchema = new mongoose.Schema(
   {
     userId: {
@@ -14,6 +16,9 @@ const reserveSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    reserveDate: {
+      type: Date,
+    },
   },
   {
     timestamps: {
@@ -25,13 +30,10 @@ const reserveSchema = new mongoose.Schema(
     id: false,
   }
 );
-const current = new Date();
-const dd = String(current.getDate()).padStart(2, "0");
-const tomorrowdd = String(current.getDate() + 1).padStart(2, "0");
-const mm = String(current.getMonth() + 1).padStart(2, "0"); //January is 0!
-const yyyy = current.getFullYear();
-const today = yyyy + "-" + mm + "-" + dd;
-const tomorrow = yyyy + "-" + mm + "-" + tomorrowdd;
+const startOfDay = require("date-fns/startOfDay");
+const endOfDay = require("date-fns/endOfDay");
+console.log(startOfDay(new Date("2012-12-12")));
+console.log(endOfDay(new Date("2012-12-12")));
 
 const ReserveModel = mongoose.model("Reserve", reserveSchema, "reserve");
 const express = require("express");
@@ -53,68 +55,65 @@ router.post("/:id", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const all = await ReserveModel.find({
-      createdAt: {
-        $gte: today,
-        $lte: tomorrow,
-      },
-    })
-      .populate({
-        path: "userId",
-        select: "_id name level",
+    const { reserveDate } = req.query;
+    let query;
+    let all;
+    if (reserveDate) {
+      all = await ReserveModel.find({
+        reserveDate: {
+          $gte: startOfDay(new Date(reserveDate)),
+          $lte: endOfDay(new Date(reserveDate)),
+        },
       })
-      .lean();
+        .populate({
+          path: "userId",
+          select: "_id name level",
+        })
+        .lean();
+    } else {
+      all = await ReserveModel.find({})
+        .populate({
+          path: "userId",
+          select: "_id name level",
+        })
+        .lean();
+    }
+
     res.send(all);
   } catch (error) {
     console.log(error);
   }
 });
 
-// router.get("/isToday", async (req, res) => {
-//   const list = await ReserveModel.find({ isToday: 1 })
-//     .populate({
-//       path: "userId",
-//       select: "_id name level",
-//     })
-//     .lean();
-//   res.send(list);
-// });
-
-router.get("/isReady", async (req, res) => {
+router.get("/today", async (req, res) => {
   try {
-    const list = await ReserveModel.find({
-      status: 0,
-      createdAt: {
-        $gte: today,
-        $lte: tomorrow,
+    const all = await ReserveModel.find({
+      reserveDate: {
+        $gte: startOfDay(new Date()),
+        $lte: endOfDay(new Date()),
       },
-    })
-      .populate({
-        path: "userId",
-        select: "_id name level",
-      })
-      .lean();
-    res.status(200).send(list);
+    });
+    res.status(200).send(all);
   } catch (error) {
     console.log(error);
   }
 });
 
-// router.patch("/isToday/:id", async (req, res) => {
+// router.get("/isReady", async (req, res) => {
 //   try {
-//     const { id } = req.params;
-//     await ReserveModel.updateOne({ userId: id }, { $set: { isToday: 1 } });
-//     res.sendStatus(200);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
-
-// router.patch("/clearToday/:id", async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     await ReserveModel.updateOne({ userId: id }, { $set: { isToday: 0 } });
-//     res.sendStatus(200);
+//     const list = await ReserveModel.find({
+//       status: 0,
+//       createdAt: {
+//         $gte: today,
+//         $lte: tomorrow,
+//       },
+//     })
+//       .populate({
+//         path: "userId",
+//         select: "_id name level",
+//       })
+//       .lean();
+//     res.status(200).send(list);
 //   } catch (error) {
 //     console.log(error);
 //   }

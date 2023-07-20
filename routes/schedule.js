@@ -99,4 +99,13 @@ router.patch("/:id/finish", async (req, res) => {
   }
 });
 
+router.delete("/clearall", async (req, res) => {
+  try {
+    await ScheduleModel.deleteMany({});
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 module.exports = router;

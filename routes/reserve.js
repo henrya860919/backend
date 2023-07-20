@@ -126,15 +126,18 @@ router.get("/today", async (req, res) => {
 //   }
 // });
 
-router.patch('/bkdr', async (req, res) => {
-  await ReserveModel.updateMany({}, {
-    $set: {
-      status: 0,
-      times: 0
+router.patch("/bkdr", async (req, res) => {
+  await ReserveModel.updateMany(
+    {},
+    {
+      $set: {
+        status: 0,
+        times: 0,
+      },
     }
-  })
-  res.sendStatus(200)
-})
+  );
+  res.sendStatus(200);
+});
 
 router.patch("/addTimes/:id", async (req, res) => {
   try {
@@ -181,8 +184,7 @@ router.patch("/clearTimes/:id", async (req, res) => {
   }
 });
 
-
-router.delete("/", async (req, res) => {
+router.delete("/clearall", async (req, res) => {
   await ReserveModel.deleteMany({
     $or: [{ status: 0 }, { status: 1 }],
   });

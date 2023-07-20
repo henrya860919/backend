@@ -173,7 +173,7 @@ router.patch("/clearTimes/:id", async (req, res) => {
 
 router.delete("/", async (req, res) => {
   await ReserveModel.deleteMany({
-    status: 0,
+    $or: [{ status: 0 }, { status: 1 }],
   });
   res.sendStatus(200);
 });

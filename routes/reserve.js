@@ -32,8 +32,6 @@ const reserveSchema = new mongoose.Schema(
 );
 const startOfDay = require("date-fns/startOfDay");
 const endOfDay = require("date-fns/endOfDay");
-console.log(startOfDay(new Date("2012-12-12")));
-console.log(endOfDay(new Date("2012-12-12")));
 
 const ReserveModel = mongoose.model("Reserve", reserveSchema, "reserve");
 const express = require("express");
@@ -96,7 +94,12 @@ router.get("/today", async (req, res) => {
         $gte: startOfDay(new Date()),
         $lte: endOfDay(new Date()),
       },
-    });
+    })
+      .populate({
+        path: "userId",
+        select: "_id name level",
+      })
+      .lean();
     res.status(200).send(all);
   } catch (error) {
     console.log(error);

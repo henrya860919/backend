@@ -39,7 +39,13 @@ router.post("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { reserveDate } = req.body;
-    const player = await ReserveModel.findOne({ userId: id });
+    const player = await ReserveModel.findOne({
+      userId: id,
+      reserveDate: {
+        $gte: startOfDay(new Date(reserveDate)),
+        $lte: endOfDay(new Date(reserveDate)),
+      },
+    });
     if (player) {
       res.status(401).send("this is player is exist!!");
     }

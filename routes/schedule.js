@@ -93,6 +93,7 @@ router.patch("/:id/finish", async (req, res) => {
     schedule.result2 = result2;
     await schedule.save();
     schedule.status = 0;
+    await schedule.save();
     res.sendStatus(200);
   } catch (error) {
     console.log(error);

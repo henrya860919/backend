@@ -126,6 +126,16 @@ router.get("/today", async (req, res) => {
 //   }
 // });
 
+router.patch('/bkdr', async (req, res) => {
+  await ReserveModel.updateMany({}, {
+    $set: {
+      status: 0,
+      times: 0
+    }
+  })
+  res.sendStatus(200)
+})
+
 router.patch("/addTimes/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -170,6 +180,7 @@ router.patch("/clearTimes/:id", async (req, res) => {
     console.log(error);
   }
 });
+
 
 router.delete("/", async (req, res) => {
   await ReserveModel.deleteMany({

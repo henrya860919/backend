@@ -37,8 +37,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   console.log(
     "\x1b[32m",
-    `${new Date().toLocaleTimeString()} ${
-      req.connection.remoteAddress
+    `${new Date().toLocaleTimeString()} ${req.connection.remoteAddress
     } requested the api:`
   );
   console.log("\x1b[33m", `${req.method}  ${req.originalUrl}`);

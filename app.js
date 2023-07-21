@@ -80,7 +80,16 @@ async function mongodbConnect() {
 //   await mongodbConnect();
 //   console.log("app is running");
 // });
-app.listen(7777, async () => {
+// app.listen(7777, async () => {
+//   await mongodbConnect();
+//   console.log("app is running");
+// });
+
+
+require('https').createServer({
+  key: fs.readFileSync('./ssl/RSA-privkey.pem'),
+  cert: fs.readFileSync('./ssl/RSA-cert.pem'),
+}, app).listen(7777, async () => {
   await mongodbConnect();
   console.log("app is running");
 });

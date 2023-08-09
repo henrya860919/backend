@@ -46,7 +46,8 @@ const scheduleSchema = new mongoose.Schema(
     id: false,
   }
 );
-
+const startOfDay = require("date-fns/startOfDay");
+const endOfDay = require("date-fns/endOfDay");
 const ScheduleModel = mongoose.model("Schedule", scheduleSchema, "schedule");
 const express = require("express");
 const router = express.Router();
@@ -64,7 +65,13 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const scheduleList = await ScheduleModel.find({}).populate(
+    const { date } = req.query;
+    const scheduleList = await ScheduleModel.find({
+      createdAt: {
+        $gte: startOfDay(new Date(date)),
+        $lte: endOfDay(new Date(date)),
+      },
+    }).populate(
       "group1.players group2.players"
     );
     res.send(scheduleList);
@@ -74,7 +81,10 @@ router.get("/", async (req, res) => {
 });
 router.get("/current", async (req, res) => {
   try {
-    const scheduleList = await ScheduleModel.find({ status: 1 }).populate(
+
+    const scheduleList = await ScheduleModel.find({
+      status: 1
+    }).populate(
       "group1.players group2.players"
     );
     res.send(scheduleList);

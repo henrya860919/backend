@@ -1,37 +1,7 @@
-const mongoose = require("mongoose");
-const reserveSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    times: {
-      type: Number,
-      default: 0,
-    },
-    status: {
-      type: Number,
-      default: 0,
-    },
-    reserveDate: {
-      type: Date,
-    },
-  },
-  {
-    timestamps: {
-      createdAt: true,
-      updatedAt: true,
-    },
-    versionKey: false,
-    minimize: false,
-    id: false,
-  }
-);
+const ReserveModel = require('../models/reserve')
 const startOfDay = require("date-fns/startOfDay");
 const endOfDay = require("date-fns/endOfDay");
 
-const ReserveModel = mongoose.model("Reserve", reserveSchema, "reserve");
 const express = require("express");
 const router = express.Router();
 
@@ -45,7 +15,7 @@ router.post("/:id", async (req, res) => {
         $gte: startOfDay(new Date(reserveDate)),
         $lte: endOfDay(new Date(reserveDate)),
       },
-    });
+    })
     if (player) {
       res.status(401).send("this is player is exist!!");
     }
@@ -126,7 +96,8 @@ router.patch("/bkdr", async (req, res) => {
 router.patch("/addTimes/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await ReserveModel.updateOne({ userId: id }, { $inc: { times: 1 } });
+    await ReserveModel.findByIdAndUpdate(id, { $inc: { times: 1 } })
+    // await ReserveModel.updateOne({ userId: id }, { $inc: { times: 1 } });
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
@@ -135,7 +106,8 @@ router.patch("/addTimes/:id", async (req, res) => {
 router.patch("/decreaseTimes/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const one = await ReserveModel.findOne({ userId: id });
+    const one = await ReserveModel.findById(id)
+    // const one = await ReserveModel.findOne({ userId: id });
     one.times -= 1;
     if (one.times < 0) {
       return res.status(401).send("times can not less 0 !!");
@@ -149,7 +121,9 @@ router.patch("/decreaseTimes/:id", async (req, res) => {
 router.patch("/action/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await ReserveModel.updateOne({ userId: id }, { $set: { status: 1 } });
+    // await ReserveModel.updateOne({ userId: id }, { $set: { status: 1 } });
+    // const aaa = await ReserveModel.findOneAndUpdate({ userId: id }, { $set: { status: 1 } }, { new: true })
+    await ReserveModel.findByIdAndUpdate(id, { $set: { status: 1 } })
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
@@ -158,7 +132,8 @@ router.patch("/action/:id", async (req, res) => {
 router.patch("/clearStatus/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await ReserveModel.updateOne({ userId: id }, { $set: { status: 0 } });
+    // await ReserveModel.updateOne({ userId: id, status: 1 }, { $set: { status: 0 } });
+    await ReserveModel.findByIdAndUpdate(id, { $set: { status: 0 } })
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
@@ -175,7 +150,8 @@ router.patch("/backdoor/clearStatus", async (req, res) => {
 router.patch("/clearTimes/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await ReserveModel.updateOne({ userId: id }, { $set: { times: 0 } });
+    // await ReserveModel.updateOne({ userId: id }, { $set: { times: 0 } });
+    await ReserveModel.findByIdAndUpdate(id, { $set: { times: 0 } })
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
